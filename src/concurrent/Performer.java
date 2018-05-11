@@ -56,7 +56,7 @@ public abstract class Performer<I,O> {
 	
 	protected abstract Runnable makeJob(List<I> items);
 
-	protected final OutputBuffer<O> getOutputBuffer() {
+	protected OutputBuffer<O> getOutputBuffer() {
 		return this.out;
 	}
 	
@@ -188,4 +188,6 @@ public abstract class Performer<I,O> {
 			this.items = null;
 		}
 	}
+
+	
 }

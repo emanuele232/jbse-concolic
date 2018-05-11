@@ -42,7 +42,7 @@ public class PerformerEvosuite extends Performer<JBSEResult, EvosuiteResult> {
 	private final TestIdentifier testIdentifier;
 	private final JavaCompiler compiler;
 
-	public PerformerEvosuite(Options o, InputBuffer<JBSEResult> in, OutputBuffer<EvosuiteResult> out) {
+	public PerformerEvosuite(Options o, HighPriorityInputOutputQueue<JBSEResult> in, OutputBuffer<EvosuiteResult> out) {
 		super(in, out, o.getNumOfThreads(), (o.getUseMOSA() ? o.getNumMOSATargets() : 1), o.getTimeoutMOSATaskCreationDuration(), o.getTimeoutMOSATaskCreationUnit());
 		this.classesPath = String.join(File.pathSeparator, stream(o.getClassesPath()).map(Object::toString).toArray(String[]::new)); 
 		this.tmpPath = o.getTmpDirectoryPath();

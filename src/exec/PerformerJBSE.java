@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import concurrent.HighPrioOutputBuffer;
 import concurrent.InputBuffer;
 import concurrent.OutputBuffer;
 import concurrent.Performer;
@@ -22,12 +23,12 @@ import jbse.mem.State;
 import jbse.mem.exc.ContradictionException;
 import jbse.mem.exc.ThreadStackEmptyException;
 
-public class PerformerJBSE extends Performer<EvosuiteResult, JBSEResult> {
+public class PerformerJBSE<O> extends Performer<EvosuiteResult, JBSEResult> {
 	private final Options o;
 	private final int maxDepth;
 	private final CoverageSet coverageSet;
 
-	public PerformerJBSE(Options o, InputBuffer<EvosuiteResult> in, OutputBuffer<JBSEResult> out, CoverageSet coverageSet) {
+	public PerformerJBSE(Options o, InputBuffer<EvosuiteResult> in, HighPrioOutputBuffer<JBSEResult> out, CoverageSet coverageSet) {
 		super(in, out, o.getNumOfThreads(), 1, o.getGlobalTimeBudgetDuration(), o.getGlobalTimeBudgetUnit());
 		this.o = o.clone();
 		this.maxDepth = o.getMaxDepth();
@@ -100,7 +101,19 @@ public class PerformerJBSE extends Performer<EvosuiteResult, JBSEResult> {
 				if (alreadyExplored(currentPC, tcFinalPC)) {
 					continue;
 				}
-				this.getOutputBuffer().add(new JBSEResult(item, initialState, preState, newState, atJump, currentDepth));
+				
+				HighPrioOutputBuffer<JBSEResult> outB = (HighPrioOutputBuffer<JBSEResult>) getOutputBuffer();
+				//this.getOutputBuffer().add(new JBSEResult(item, initialState, preState, newState, atJump, currentDepth));
+				if(coverageSet.covers(newState.getCurrentMethodSignature().toString() + ":" + preState.getPC() + ":" + newState.getPC())) {
+					 
+					outB.addLowPrio(new JBSEResult(item, initialState, preState, newState, atJump, currentDepth));
+					System.out.println("lowPrio: " + newState.getPathCondition().toString());
+				}
+				else {
+					outB.addHighPrio(new JBSEResult(item, initialState, preState, newState, atJump, currentDepth));
+					System.out.println("HighPrio: " + newState.getPathCondition().toString());
+				}
+
 				System.out.println("[JBSE    ] From test case " + tc.getClassName() + " generated path condition " + currentPC);
 				noPathConditionGenerated = false;
 			}
@@ -122,6 +135,8 @@ public class PerformerJBSE extends Performer<EvosuiteResult, JBSEResult> {
 			return false;
 		}
 	}
+	
+	
 
 	
 }

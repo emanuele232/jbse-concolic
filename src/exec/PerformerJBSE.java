@@ -22,7 +22,7 @@ import jbse.mem.State;
 import jbse.mem.exc.ContradictionException;
 import jbse.mem.exc.ThreadStackEmptyException;
 
-public class PerformerJBSE<O> extends Performer<EvosuiteResult, JBSEResult> {
+public class PerformerJBSE extends Performer<EvosuiteResult, JBSEResult> {
 	private final Options o;
 	private final int maxDepth;
 	private final CoverageSet coverageSet;
@@ -100,20 +100,7 @@ public class PerformerJBSE<O> extends Performer<EvosuiteResult, JBSEResult> {
 				if (alreadyExplored(currentPC, tcFinalPC)) {
 					continue;
 				}
-				
-				getOutputBuffer().add(new JBSEResult(item, initialState, preState, newState, atJump, currentDepth));
-				/*
-				HighPrioOutputBuffer<JBSEResult> outB = (HighPrioOutputBuffer<JBSEResult>) getOutputBuffer();
-				//this.getOutputBuffer().add(new JBSEResult(item, initialState, preState, newState, atJump, currentDepth));
-				if(coverageSet.covers(newState.getCurrentMethodSignature().toString() + ":" + preState.getPC() + ":" + newState.getPC())) {
-					 
-					outB.addLowPrio(new JBSEResult(item, initialState, preState, newState, atJump, currentDepth));
-				}
-				else {
-					outB.addHighPrio(new JBSEResult(item, initialState, preState, newState, atJump, currentDepth));
-				}
-				*/
-
+				this.getOutputBuffer().add(new JBSEResult(item, initialState, preState, newState, atJump, currentDepth));
 				System.out.println("[JBSE    ] From test case " + tc.getClassName() + " generated path condition " + currentPC);
 				noPathConditionGenerated = false;
 			}
@@ -121,6 +108,7 @@ public class PerformerJBSE<O> extends Performer<EvosuiteResult, JBSEResult> {
 			//saves the coverage
 			this.coverageSet.addAll(rp.getCoverage());
 		}
+		System.out.println("[JBSE    ] Current coverage: " + this.coverageSet.size() + " branches");
 		if (noPathConditionGenerated) {
 			System.out.println("[JBSE    ] From test case " + tc.getClassName() + " no path condition generated");
 		}
@@ -135,8 +123,6 @@ public class PerformerJBSE<O> extends Performer<EvosuiteResult, JBSEResult> {
 			return false;
 		}
 	}
-	
-	
 
 	
 }

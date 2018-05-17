@@ -3,15 +3,38 @@ package exec;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import concurrent.HighPrioOutputBuffer;
+import concurrent.OutputBuffer;
+import jbse.mem.State;
+import jbse.mem.exc.ThreadStackEmptyException;
 import concurrent.InputBuffer;
 
-public class HighPriorityInputOutputQueue<E> implements InputBuffer<E>, HighPrioOutputBuffer<E>{
+public class HighPriorityInputOutputQueue<E> implements InputBuffer<E>, OutputBuffer<E>{
 	private final LinkedBlockingQueue<E> highPrioQueue = new LinkedBlockingQueue<>();
 	private final LinkedBlockingQueue<E> lowPrioQueue = new LinkedBlockingQueue<>();
+	private final CoverageSet coverageSet;
+	
+	public HighPriorityInputOutputQueue(CoverageSet coverageSet) {
+		this.coverageSet = coverageSet;
+	}
 	
 	@Override
 	public boolean add(E e) {
+		State newState = ((JBSEResult)e).getFinalState();
+		State preState = ((JBSEResult)e).getPreState();
+		
+		try {
+			if(coverageSet.covers(newState.getCurrentMethodSignature().toString() + ":" + preState.getPC() + ":" + newState.getPC())) {
+				 
+				lowPrioQueue.add(e);
+			}
+			else {
+				highPrioQueue.add(e);
+			}
+		} catch (ThreadStackEmptyException e1) {
+			// TODO better exception needed!
+			e1.printStackTrace();
+		}
+		
 		return false;
 	}
 	
@@ -33,16 +56,6 @@ public class HighPriorityInputOutputQueue<E> implements InputBuffer<E>, HighPrio
 		return false;
 	}
 	
-	public boolean addHighPrio(E e) {
-		return highPrioQueue.add(e);
-	}
 	
-	public boolean addLowPrio(E e) {
-		return lowPrioQueue.add(e);
-	}
-	
-	public boolean isHighPrioEmpty() {
-		return highPrioQueue.isEmpty();
-	}
 
 }

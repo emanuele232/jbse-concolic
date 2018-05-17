@@ -49,7 +49,7 @@ public final class Main {
 		final CoverageSet coverageSet = new CoverageSet();
 		
 		//creates the communication queues between the performers
-		final HighPriorityInputOutputQueue<JBSEResult> pathConditionBuffer = new HighPriorityInputOutputQueue<>();
+		final HighPriorityInputOutputQueue<JBSEResult> pathConditionBuffer = new HighPriorityInputOutputQueue<>(coverageSet);
 		final QueueInputOutputBuffer<EvosuiteResult> testCaseBuffer = new QueueInputOutputBuffer<>();
 		
 		//creates and wires together the components of the architecture

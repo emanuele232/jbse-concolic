@@ -107,11 +107,9 @@ public class PerformerJBSE<O> extends Performer<EvosuiteResult, JBSEResult> {
 				if(coverageSet.covers(newState.getCurrentMethodSignature().toString() + ":" + preState.getPC() + ":" + newState.getPC())) {
 					 
 					outB.addLowPrio(new JBSEResult(item, initialState, preState, newState, atJump, currentDepth));
-					System.out.println("lowPrio: " + newState.getPathCondition().toString());
 				}
 				else {
 					outB.addHighPrio(new JBSEResult(item, initialState, preState, newState, atJump, currentDepth));
-					System.out.println("HighPrio: " + newState.getPathCondition().toString());
 				}
 
 				System.out.println("[JBSE    ] From test case " + tc.getClassName() + " generated path condition " + currentPC);

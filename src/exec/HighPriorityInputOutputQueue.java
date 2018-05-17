@@ -22,9 +22,7 @@ public class HighPriorityInputOutputQueue<E> implements InputBuffer<E>, HighPrio
 		obj = highPrioQueue.poll((long) (timeout * 10), unit);
 		if (obj == null) {
 			obj = lowPrioQueue.poll((long) (timeout * 0.005), unit);
-			System.out.println("lowPrioPick");
 		}
-		else System.out.println("HighPrioPick");
 
 		return obj;
 	}

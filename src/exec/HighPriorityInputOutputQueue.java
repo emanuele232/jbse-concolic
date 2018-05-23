@@ -42,7 +42,7 @@ public class HighPriorityInputOutputQueue<E> implements InputBuffer<E>, OutputBu
 	@Override
 	public E poll(long timeout, TimeUnit unit) throws InterruptedException {
 		E obj = null;
-		obj = highPrioQueue.poll((long) (timeout), unit);
+		obj = highPrioQueue.poll((long) (timeout * 5), unit);
 		if (obj == null) {
 			obj = lowPrioQueue.poll((long) (timeout * 0.005), unit);
 		}
